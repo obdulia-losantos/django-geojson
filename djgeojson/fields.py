@@ -10,17 +10,23 @@ try:
     HAS_LEAFLET = True
 except ImportError:
     HAS_LEAFLET = False
-try:
-    from jsonfield.fields import JSONField
-    from jsonfield.forms import JSONField as JSONFormField
-except ImportError:
-    class Missing(object):
-        def __init__(self, *args, **kwargs):
-            err_msg = '`jsonfield` dependency missing. See README.'
-            raise ImproperlyConfigured(err_msg)
 
-    JSONField = Missing
-    JSONFormField = Missing
+try:
+    # >= Django 3.1
+    from django.db.models import JSONField
+    from django.forms import JSONField as JSONFormField
+except ImportError:
+    try:
+        from jsonfield.fields import JSONField
+        from jsonfield.forms import JSONField as JSONFormField
+    except ImportError:
+        class Missing(object):
+            def __init__(self, *args, **kwargs):
+                err_msg = '`jsonfield` dependency missing. See README.'
+                raise ImproperlyConfigured(err_msg)
+
+        JSONField = Missing
+        JSONFormField = Missing
 
 
 class GeoJSONValidator(object):
